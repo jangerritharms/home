@@ -1,0 +1,1 @@
+/home/jan/dwm/config.h
