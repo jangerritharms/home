@@ -5,7 +5,7 @@ set nocompatible              " be iMproved, required
 filetype off                  " required
 
 " set the runtime path to include Vundle and initialize
-set rtp+=~/.vim/bundle/vundle/
+set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#rc()
 
 " let Vundle manage Vundle, required
@@ -34,6 +34,9 @@ filetype plugin on
 " Error bells
 set visualbell
 set noerrorbells
+
+" Fix backspace 
+set backspace=2
 
 " Sudo save
 cmap w!! w !sude tee % >/dev/null
