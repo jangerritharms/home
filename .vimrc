@@ -152,10 +152,10 @@ map <up> <nop>
 map <down> <nop>
 map <left> <nop>
 map <right> <nop>
-map j <nop>
-map h <nop>
-map k <nop>
-map l <nop>
+" map j <nop>
+" map h <nop>
+" map k <nop>
+" map l <nop>
 let g:EasyMotion_leader_key = '<leader>'    " trigger motion with <leader><leader>
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 

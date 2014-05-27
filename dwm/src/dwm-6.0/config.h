@@ -2,8 +2,8 @@
 
 /* appearance */
 //static const char font[]            = "-*-terminus-medium-r-*-*-16-*-*-*-*-*-*-*";
-static const char font[] = "Inconsolata\-dz for Powerline 10";
-static const char font_dmenu[] = "Inconsolata\\-dz\ for\ Powerline-10";
+static const char font[] = "Source Code Pro for Powerline 10";
+static const char font_dmenu[] = "Source Code Pro for Powerline-10";
 #define NUMCOLORS 4
 static const char colors[NUMCOLORS][ColLast][8] = {
     // border   foreground  background
