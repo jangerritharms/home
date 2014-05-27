@@ -48,9 +48,10 @@ cmap w!! w !sude tee % >/dev/null
 Bundle 'bling/vim-airline'
 
 " Additional settings for airline
-let $PYTHONPATH="/usr/lib/python3.3/site-packages"
+let $PYTHONPATH="/usr/lib/python3.4/site-packages"
 set encoding=utf-8
 let g:airline_powerline_fonts = 1
+set laststatus=2 					" otherwise airline does not appear
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
