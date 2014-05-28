@@ -190,6 +190,10 @@ nmap <leader>err :SyntasticCheck<cr>
 nmap <leader>en :lnext<cr>
 nmap <leader>ep :lprevious<cr>
 
+" Add c++11 support
+let g:syntastic_cpp_compiler = 'clang++'
+let g:syntastic_cpp_compiler_options = '-sdt=c++11 -stdlib=libc++'
+
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
