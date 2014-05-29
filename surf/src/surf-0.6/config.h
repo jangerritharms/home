@@ -33,12 +33,11 @@ static Bool hidebackground  = FALSE;
 
 #define SETPROP(p, q) { \
 	.v = (char *[]){ "/bin/sh", "-c", \
-		"prop=\"`xprop -id $2 $0 | cut -d '\"' -f 2 | dmenu`\" &&" \
+		"prop=\"`xprop -id $2 $0 | cut -d '\"' -f 2 | dmenu -fn 'Source Code Pro for Powerline-10' -nb '#FDF6E3' -nf '#657B83' -sb '#93A1A1' -sf '#EEE8D5'`\" &&" \
 		"xprop -id $2 -f $1 8s -set $1 \"$prop\"", \
 		p, q, winid, NULL \
 	} \
 }
-
 /* Use history file */
 #define SETURI(p) { .v = (char *[]) { "/bin/sh", "-c", \
         "prop=\"`dmenu.uri.sh`\" && " \
