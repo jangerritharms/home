@@ -3,7 +3,7 @@
 !.vimrc
 !surf/*
 !/dwm/*
-!dwmstatus-git/*
+!dwmstatus-git/
 !.zshrc
 !.Xresources
 !.gitignore
