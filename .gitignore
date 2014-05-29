@@ -1,10 +1,10 @@
 /*
 /*/
 !.vimrc
-!/surf
-!/dwm
-!/dwmstatus-git
+!surf/*
+!/dwm/*
+!dwmstatus-git/*
 !.zshrc
 !.Xresources
 !.gitignore
-!/st
+!st/*
