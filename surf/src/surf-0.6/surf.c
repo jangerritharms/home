@@ -678,7 +678,7 @@ loaduri(Client *c, const Arg *arg) {
 	} else {
 		webkit_web_view_load_uri(c->view, u);
         f = fopen(historyfile, "a+");
-        fprintf(f, "%s", u);
+        fprintf(f, "\n%s", u);
         fclose(f);
 		c->progress = 0;
 		c->title = copystr(&c->title, u);
@@ -1445,7 +1445,7 @@ main(int argc, char *argv[]) {
 		useragent = EARGF(usage());
 		break;
 	case 'v':
-		die("surf-"VERSION", ©2009-2012 surf engineers, "
+		die("surf-"VERSION", ©2009-2012 surf engineers, " 
 				"see LICENSE for details\n");
 	case 'x':
 		showxid = TRUE;

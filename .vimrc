@@ -30,6 +30,7 @@ set undolevels=1000 " Number of remembered undos
 " Filetypes
 set wildignore=*.swp,*.bak,*.pyc,*.class,*.o
 filetype plugin on
+syntax on
 
 " Error bells
 set visualbell
@@ -146,8 +147,6 @@ map <leader>= :TCommentBlock<CR>
 " Movement
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 Bundle 'Lokaltog/vim-easymotion'
-nnoremap j gj           " Move down visual line
-nnoremap k gk           " Move up visual line 
 map <up> <nop>
 map <down> <nop>
 map <left> <nop>
@@ -156,6 +155,8 @@ map <right> <nop>
 " map h <nop>
 " map k <nop>
 " map l <nop>
+map j gj
+map k gk
 let g:EasyMotion_leader_key = '<leader>'    " trigger motion with <leader><leader>
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 

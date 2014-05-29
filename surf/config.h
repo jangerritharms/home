@@ -31,23 +31,16 @@ static Bool enableinspector = TRUE;
 static Bool loadimages = TRUE;
 static Bool hidebackground  = FALSE;
 
-#define SETPROP(p, q) { \
-	.v = (char *[]){ "/bin/sh", "-c", \
-		"prop=\"`xprop -id $2 $0 | cut -d '\"' -f 2 | dmenu -fn 'Source Code Pro for Powerline-10' -nb '#FDF6E3' -nf '#657B83' -sb '#93A1A1' -sf '#EEE8D5'`\" &&" \
-		"xprop -id $2 -f $1 8s -set $1 \"$prop\"", \
-		p, q, winid, NULL \
-	} \
-}
 /* Use history file */
 #define SETURI(p) { .v = (char *[]) { "/bin/sh", "-c", \
-        "prop=\"`dmenu.uri.sh`\" && " \
+        "prop=\"`~/.surf/dmenu.uri.sh`\" && " \
         "xprop -id $1 -f $0 8s -set $0 \"$prop\"", \
         p, winid, NULL } }
 
 /* DOWNLOAD(URI, referer) */
 #define DOWNLOAD(d, r) { \
 	.v = (char *[]){ "/bin/sh", "-c", \
-		"urxvt -e /bin/sh -c \"curl -J -O --user-agent '$1'" \
+		"st -e /bin/sh -c \"curl -J -O --user-agent '$1'" \
 		" --referer '$2'" \
 		" -b ~/.surf/cookies.txt -c ~/.surf/cookies.txt '$0';" \
 		" sleep 5;\"", \
@@ -92,11 +85,11 @@ static Key keys[] = {
     { MODKEY,               GDK_o,      source,     { 0 } },
     { MODKEY|GDK_SHIFT_MASK,GDK_o,      inspector,  { 0 } },
 
-    { MODKEY,               GDK_g,      spawn,      SETPROP("_SURF_URI", "_SURF_GO") },
+    { MODKEY,               GDK_g,      spawn,      SETURI("_SURF_GO") },
     { MODKEY,               GDK_f,      eval,       { .v = (char *[]) { "hintMode()", NULL}}},
     { MODKEY,               GDK_F,      eval,       { .v = (char *[]) { "hintMode(true)", NULL}}},
     { MODKEY,               GDK_c,      eval,       { .v = (char *[]) { "removeHints()", NULL}}},
-    { MODKEY,               GDK_slash,  spawn,      SETPROP("_SURF_FIND", "_SURF_FIND") },
+    { MODKEY,               GDK_slash,  spawn,      SETURI("_SURF_FIND") },
 
     { MODKEY,               GDK_n,      find,       { .b = TRUE } },
     { MODKEY|GDK_SHIFT_MASK,GDK_n,      find,       { .b = FALSE } },
@@ -105,7 +98,5 @@ static Key keys[] = {
     { MODKEY|GDK_SHIFT_MASK,GDK_i,      toggle,     { .v = "auto-load-images" } },
     { MODKEY|GDK_SHIFT_MASK,GDK_s,      toggle,     { .v = "enable-scripts" } },
     { MODKEY|GDK_SHIFT_MASK,GDK_v,      toggle,     { .v = "enable-plugins" } },
-
-    { MODKEY,               GDK_Return, spawn,       SETURI("_SURF_URI") },
 };
 
