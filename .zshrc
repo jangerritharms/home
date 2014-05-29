@@ -80,3 +80,4 @@ alias pS="sudo pacman -Ss"
 alias pU="sudo pacman -Sy"
 alias b-dwm="cd ~/dwm;updpkgsums;makepkg -efi;cd ~"
 alias png_to_pdf='for f in $(ls *.png); do convert "$f" "${f%.*}".pdf; done'
+alias skype='xhost +local: && sudo -u skype /usr/bin/skype'
