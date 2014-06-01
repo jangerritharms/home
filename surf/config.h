@@ -1,6 +1,6 @@
 /* modifier 0 means no modifier */
 #define HOMEPAGE "http://www.google.com/"
-static char *useragent      = "Mozilla/5.0 (X11; U; Unix; en-US) "
+static char *useragent      = "Mozilla/5.0 (compatible; Windows NT 6.1; X11; U; Unix; en-US) "
 	"AppleWebKit/537.15 (KHTML, like Gecko) Chrome/24.0.1295.0 "
 	"Safari/537.15 Surf/"VERSION;
 static char *progress       = "#0000FF";
@@ -48,8 +48,24 @@ static Bool hidebackground  = FALSE;
 	} \
 }
 
+#define DEBUG(t) {.v = (char *[]) { "/bin/sh", "-c", "echo -e $0 | dmenu" \
+				 , NULL }}
+
 #define MODKEY GDK_CONTROL_MASK
 
+static void
+stuff(Client *c, const Arg *arg) {
+	WebKitDOMDocument *d = webkit_web_view_get_dom_document(c->view);
+	WebKitDOMNodeList *ns = webkit_dom_document_get_elements_by_name(d, "q");
+	WebKitDOMNode *n = webkit_dom_node_list_item(ns, 0);
+	webkit_dom_element_focus((WebKitDOMElement *)n);
+}
+
+static void
+focus_main(Client *c, const Arg *arg) {
+	WebKitDOMDocument *d = webkit_web_view_get_dom_document(c->view);
+	webkit_dom_element_focus(webkit_dom_document_get_document_element(d));
+}
 /* hotkeys */
 /*
  * If you use anything else but MODKEY and GDK_SHIFT_MASK, don't forget to
@@ -80,6 +96,7 @@ static Key keys[] = {
     { MODKEY,               GDK_i,           scroll_h,   { .i = +1 } },
     { MODKEY,               GDK_u,           scroll_h,   { .i = -1 } },
 
+	{ 0, 					GDK_F2, 	stuff, 				{0}},
     { 0,                    GDK_F11,    fullscreen, { 0 } },
     { 0,                    GDK_Escape, stop,       { 0 } },
     { MODKEY,               GDK_o,      source,     { 0 } },

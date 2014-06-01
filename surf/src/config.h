@@ -1,1 +1,1 @@
-/home/jan/surf/config.h
+../config.h

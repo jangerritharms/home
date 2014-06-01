@@ -3,7 +3,6 @@
 /* appearance */
 //static const char font[]            = "-*-terminus-medium-r-*-*-16-*-*-*-*-*-*-*";
 static const char font[] = "Source Code Pro for Powerline 10";
-static const char font_dmenu[] = "Source Code Pro for Powerline-10";
 #define NUMCOLORS 4
 static const char colors[NUMCOLORS][ColLast][8] = {
     // border   foreground  background
@@ -50,7 +49,7 @@ static const Layout layouts[] = {
 #define SHCMD(cmd) { .v = (const char*[]){ "/bin/sh", "-c", cmd, NULL } }
 
 /* commands */
-static const char *dmenucmd[] = { "dmenu_run", "-fn", font_dmenu, "-nb", colors[0][ColBG], "-nf", colors[0][ColFG],"-sb", colors[1][ColBG], "-sf", colors[1][ColFG], NULL};
+static const char *dmenucmd[] = { "dmenu_run" , NULL};
 static const char *termcmd[] = { "st", NULL };
 static const char *browsercmd[] = { "surf", NULL };
 static const char *raisevol[] = { "amixer", "set", "Master", "2%+", NULL};

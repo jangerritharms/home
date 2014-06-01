@@ -104,7 +104,7 @@ main(void)
 
 	for (;;sleep(90)) {
 		avgs = loadavg();
-		tmams = mktimes("%H:%M", tzamsterdam);
+		tmams = mktimes("%H:%M:%S", tzamsterdam);
 
 		status = smprintf("Time: %s",
 				tmams);
