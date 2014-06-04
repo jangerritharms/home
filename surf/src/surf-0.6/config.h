@@ -54,29 +54,17 @@ static Bool hidebackground  = FALSE;
 #define MODKEY GDK_CONTROL_MASK
 
 static void
-focus_input(Client *c, const Arg *arg) {
+stuff(Client *c, const Arg *arg) {
 	WebKitDOMDocument *d = webkit_web_view_get_dom_document(c->view);
-	WebKitDOMNodeList *ns = webkit_dom_document_get_elements_by_tag_name(d, "input");
-
-	unsigned int i;
-	for (i = 0; i < webkit_dom_node_list_get_length(ns); i++) {
-		WebKitDOMNode *n = webkit_dom_node_list_item(ns, 1);
-		webkit_dom_element_focus((WebKitDOMElement *)n);
-		break;
-	}
+	WebKitDOMNodeList *ns = webkit_dom_document_get_elements_by_name(d, "q");
+	WebKitDOMNode *n = webkit_dom_node_list_item(ns, 0);
+	webkit_dom_element_focus((WebKitDOMElement *)n);
 }
 
 static void
 focus_main(Client *c, const Arg *arg) {
 	WebKitDOMDocument *d = webkit_web_view_get_dom_document(c->view);
-	WebKitDOMNodeList *ns = webkit_dom_document_get_elements_by_tag_name(d, "body");
-
-	unsigned int i;
-	for (i = 0; i < webkit_dom_node_list_get_length(ns); i++) {
-		WebKitDOMNode *n = webkit_dom_node_list_item(ns, i);
-		webkit_dom_element_focus((WebKitDOMElement *)n);
-		break;
-	}
+	webkit_dom_element_focus(webkit_dom_document_get_document_element(d));
 }
 /* hotkeys */
 /*
@@ -108,8 +96,7 @@ static Key keys[] = {
     { MODKEY,               GDK_i,           scroll_h,   { .i = +1 } },
     { MODKEY,               GDK_u,           scroll_h,   { .i = -1 } },
 
-	{ 0, 					GDK_F1, 	focus_main, 	{0}},
-	{ 0, 					GDK_F2, 	focus_input, 				{0}},
+	{ 0, 					GDK_F2, 	stuff, 				{0}},
     { 0,                    GDK_F11,    fullscreen, { 0 } },
     { 0,                    GDK_Escape, stop,       { 0 } },
     { MODKEY,               GDK_o,      source,     { 0 } },
