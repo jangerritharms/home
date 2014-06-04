@@ -69,6 +69,9 @@ let g:Tex_DefaultTargetFormat='pdf'
 let g:Tex_MultipleCompileFormats = 'pdf'
 set switchbuf+=usetab,newtab
 let g:Tex_ViewRule_pdf = 'llpp'
+
+" Adding spellchecks
+autocmd filetype tex setlocal spell spelllang=en_us
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
