@@ -63,7 +63,6 @@ Bundle 'git://git.code.sf.net/p/vim-latex/vim-latex'
 " Additional settings for vim-latex
 set shellslash
 set grepprg=grep\ -nH\ $*
-filetype indent on
 let g:tex_flavor='latex'
 let g:Tex_DefaultTargetFormat='pdf'
 let g:Tex_MultipleCompileFormats = 'pdf'
@@ -258,4 +257,10 @@ Bundle 'vim-scripts/DoxygenToolkit.vim'
 " C/C++
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 Bundle 'drmikehenry/vim-headerguard'
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" HTML/CSS
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+Bundle "mattn/emmet-vim"
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
