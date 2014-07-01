@@ -4,6 +4,8 @@
 !surf/*
 !/dwm/*
 !dwmstatus-git/
+!/birdplane-website/*
+!birdplane-website
 !.zshrc
 !.Xresources
 !.gitignore
