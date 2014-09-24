@@ -273,6 +273,7 @@ keypress(XKeyEvent *ev) {
 		case XK_m: ksym = XK_Return;    break;
 		case XK_n: ksym = XK_Down;      break;
 		case XK_p: ksym = XK_Up;        break;
+		case XK_Tab: ksym = XK_Up; 		break;
 
 		case XK_k: /* delete right */
 			text[cursor] = '\0';
@@ -394,10 +395,14 @@ keypress(XKeyEvent *ev) {
 		break;
 	case XK_Tab:
 		if(!sel)
-			return;
-		strncpy(text, sel->text, sizeof text);
-		cursor = strlen(text);
-		match();
+			sel = curr = matches;
+		else if (sel && sel->right && (sel = sel->right) == next) {
+			curr = next;
+			calcoffsets();
+		}
+		/* strncpy(text, sel->text, sizeof text); */
+		/* cursor = strlen(text); */
+		/* match(); */
 		break;
 	}
 	drawmenu();
@@ -453,7 +458,7 @@ match(void) {
 			matches = lsubstr;
 		matchend = substrend;
 	}
-	curr = sel = matches;
+	curr = matches;
 	calcoffsets();
 }
 
