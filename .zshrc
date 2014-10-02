@@ -72,7 +72,7 @@ source $ZSH/oh-my-zsh.sh
 # ssh
 # export SSH_KEY_PATH="~/.ssh/dsa_id"
 # added by Miniconda 3.3.0 installer
-#export PATH="/home/jan/miniconda/bin:$PATH"
+export PATH="/home/jan/miniconda/bin:$PATH"
 
 # some pacman aliases
 alias pI="sudo pacman -S"
@@ -82,3 +82,5 @@ alias b-dwm="cd ~/dwm;updpkgsums;makepkg -efi;cd ~"
 alias png_to_pdf='for f in $(ls *.png); do convert "$f" "${f%.*}".pdf; done'
 alias skype='xhost +local: && sudo -u skype /usr/bin/skype'
 alias Recon='reconnect.sh'
+
+export PATH="/home/jan/00PythonSoftware/bin:$PATH"
