@@ -1,73 +1,108 @@
-#define _BSD_SOURCE
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdarg.h>
-#include <string.h>
-#include <strings.h>
-#include <sys/time.h>
 #include <time.h>
+#include <string.h>
+#include <sys/socket.h>
+#include <sys/un.h>
 #include <sys/types.h>
-#include <sys/wait.h>
+#include <pwd.h>
+#include <sys/time.h>
 
 #include <X11/Xlib.h>
 
 char *tzamsterdam = "Europe/Amsterdam";
-
 static Display *dpy;
+static int sockfd;
+struct passwd *p;
 
-char *
-smprintf(char *fmt, ...)
-{
-	va_list fmtargs;
-	char *ret;
-	int len;
 
-	va_start(fmtargs, fmt);
-	len = vsnprintf(NULL, 0, fmt, fmtargs);
-	va_end(fmtargs);
-
-	ret = malloc(++len);
-	if (ret == NULL) {
-		perror("malloc");
-		exit(1);
-	}
-
-	va_start(fmtargs, fmt);
-	vsnprintf(ret, len, fmt, fmtargs);
-	va_end(fmtargs);
-
-	return ret;
+void error(const char *msg){
+	perror(strcat("ERROR: ",msg));
+	exit(1);
 }
 
 void
-settz(char *tzname)
+mktimes(char *buf, char *fmt, char *tzname)
 {
-	setenv("TZ", tzname, 1);
-}
-
-char *
-mktimes(char *fmt, char *tzname)
-{
-	char buf[129];
 	time_t tim;
 	struct tm *timtm;
 
-	memset(buf, 0, sizeof(buf));
-	settz(tzname);
 	tim = time(NULL);
 	timtm = localtime(&tim);
-	if (timtm == NULL) {
-		perror("localtime");
-		exit(1);
-	}
+	if (timtm == NULL)
+		error("localtime");
 
-	if (!strftime(buf, sizeof(buf)-1, fmt, timtm)) {
-		fprintf(stderr, "strftime == 0\n");
-		exit(1);
-	}
+	if (!strftime(buf, 19, fmt, timtm))
+		error("strftime == 0\n");
+}
 
-	return smprintf("%s", buf);
+void 
+connectdropbox(){
+	struct sockaddr_un local;
+	socklen_t len;
+
+	local.sun_family = AF_UNIX;
+	strcpy(local.sun_path, "/home/jan/.dropbox/command_socket");
+	printf("%s\n", local.sun_path);
+	len = strlen(local.sun_path)+sizeof(local.sun_family);
+
+	sockfd = socket(AF_UNIX, SOCK_STREAM, 0);
+	if (sockfd < 0)
+		error("Opening socket");
+
+	struct timeval tv = {3, 0};
+	if (setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(struct timeval)) < 0 ||
+		setsockopt(sockfd, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(struct timeval)) < 0)
+		error("Setting timeout for Dropbox socket connection");
+	if (connect(sockfd, (struct sockaddr *)&local, len) == -1)
+		error("Connecting Dropbox socket");
+}
+
+void 
+getdropbox(){
+	int socketfd, t, flags;
+	struct sockaddr_un local;
+	socklen_t len;
+
+	char *command = "get_dropbox_status\ndone\n";
+	socketfd = socket(AF_UNIX, SOCK_STREAM, 0);
+	if (socketfd <0)
+		error("ERROR opening socket");
+	local.sun_family = AF_UNIX;
+	strcpy(local.sun_path, "/home/jan/.dropbox/command_socket");
+	len = strlen(local.sun_path)+sizeof(local.sun_family);
+	struct timeval tv = {3, 0};
+	if (setsockopt(socketfd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(struct timeval)) < 0 ||
+			setsockopt(socketfd, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(struct timeval)) < 0)
+		error("ERROR setting timeout");
+	if (connect(socketfd, (struct sockaddr *)&local, len) == -1)
+		error("ERROR connecting");
+	char str[100] = "get_dropbox_status\ndone\n";
+	if (send(socketfd, str, strlen(str), 0)==-1)
+		error("ERROR sending");
+	if((t=recv(socketfd, str, 100, 0))>0){
+		str[t] = '\0';
+		printf("%s", str);
+	} else {
+		if (t<0) error("ERROR receiving");
+		else printf("Server closed connection");
+		exit(1);
+	}}
+
+void 
+getdropboxstatus(char *status){
+	int t;
+	char command[100] = "get_dropbox_status\ndone\n";
+
+	if (send(sockfd, command, strlen(command), 0) == -1)
+		error("Sending Dropbox status request");
+	if ((t = recv(sockfd, status, 40, 0))>0){
+		status[t] = '\0';
+	} else {
+		if (t<0) error("Receiving message from Dropbox");
+		else error("Dropbox server closed connection");
+	}	
 }
 
 void
@@ -77,41 +112,28 @@ setstatus(char *str)
 	XSync(dpy, False);
 }
 
-char *
-loadavg(void)
-{
-	double avgs[3];
-
-	if (getloadavg(avgs, 3) < 0) {
-		perror("getloadavg");
-		exit(1);
-	}
-
-	return smprintf("%.2f %.2f %.2f", avgs[0], avgs[1], avgs[2]);
-}
-
 int
 main(void)
 {
-	char *status;
-	char *avgs;
-	char *tmams;
+	char status[100];
+	char tmams[20];
+	char dropbox[40];
 
-	if (!(dpy = XOpenDisplay(NULL))) {
-		fprintf(stderr, "dwmstatus: cannot open display.\n");
-		return 1;
-	}
+	if ((p = getpwuid(1)) == NULL)
+		error("Getting pwuid");
 
-	for (;;sleep(90)) {
-		avgs = loadavg();
-		tmams = mktimes("%H:%M:%S", tzamsterdam);
+	/* getdropbox(); */
+	connectdropbox();
 
-		status = smprintf("Time: %s",
-				tmams);
+	if (!(dpy = XOpenDisplay(NULL)))
+		error("dwmstatus: cannot open display.\n");
+
+	for (;;sleep(1)) {
+		mktimes(tmams, "%H:%M:%S", tzamsterdam);
+		getdropboxstatus(dropbox);
+
+		sprintf(status, "Drpobox: %s | Time: %s", dropbox, tmams);
 		setstatus(status);
-		free(avgs);
-		free(tmams);
-		free(status);
 	}
 
 	XCloseDisplay(dpy);

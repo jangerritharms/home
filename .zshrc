@@ -72,7 +72,7 @@ source $ZSH/oh-my-zsh.sh
 # ssh
 # export SSH_KEY_PATH="~/.ssh/dsa_id"
 # added by Miniconda 3.3.0 installer
-#export PATH="/home/jan/miniconda/bin:$PATH"
+export PATH="/home/jan/miniconda/bin:$PATH"
 
 # some pacman aliases
 alias pI="sudo pacman -S"
@@ -84,3 +84,4 @@ alias skype='xhost +local: && sudo -u skype /usr/bin/skype'
 alias Recon='reconnect.sh'
 
 export LD_LIBRARY_PATH=/home/jan/uni/Humanoid\ Robots/dip/Linuxa64/lib:$LD_LIBRARY_PATH
+export PATH="/home/jan/00PythonSoftware/bin:$PATH"
