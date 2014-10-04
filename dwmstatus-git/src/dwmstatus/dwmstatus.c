@@ -8,8 +8,11 @@
 #include <sys/types.h>
 #include <pwd.h>
 #include <sys/time.h>
+#include <stdbool.h>
 
 #include <X11/Xlib.h>
+
+char *dropboxstates[4] = {"Downloading", "Uploading", "Syncing", "Indexing"};
 
 char *tzamsterdam = "Europe/Amsterdam";
 static Display *dpy;
@@ -18,7 +21,7 @@ struct passwd *p;
 
 
 void error(const char *msg){
-	perror(strcat("ERROR: ",msg));
+	perror(msg);
 	exit(1);
 }
 
@@ -31,10 +34,10 @@ mktimes(char *buf, char *fmt, char *tzname)
 	tim = time(NULL);
 	timtm = localtime(&tim);
 	if (timtm == NULL)
-		error("localtime");
+		error("ERROR: localtime");
 
 	if (!strftime(buf, 19, fmt, timtm))
-		error("strftime == 0\n");
+		error("ERROR: strftime == 0\n");
 }
 
 void 
@@ -44,64 +47,42 @@ connectdropbox(){
 
 	local.sun_family = AF_UNIX;
 	strcpy(local.sun_path, "/home/jan/.dropbox/command_socket");
-	printf("%s\n", local.sun_path);
 	len = strlen(local.sun_path)+sizeof(local.sun_family);
 
 	sockfd = socket(AF_UNIX, SOCK_STREAM, 0);
 	if (sockfd < 0)
-		error("Opening socket");
+		error("ERROR: Opening socket");
 
 	struct timeval tv = {3, 0};
 	if (setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(struct timeval)) < 0 ||
 		setsockopt(sockfd, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(struct timeval)) < 0)
-		error("Setting timeout for Dropbox socket connection");
-	if (connect(sockfd, (struct sockaddr *)&local, len) == -1)
-		error("Connecting Dropbox socket");
+		error("ERROR: Setting timeout for Dropbox socket connection");
+	if (connect(sockfd, (struct sockaddr *)&local, len) == -1){
+		sleep(5);
+		if (connect(sockfd, (struct sockaddr *)&local, len) == -1)
+			error("ERROR: Connecting Dropbox socket");
+	}
 }
 
 void 
-getdropbox(){
-	int socketfd, t, flags;
-	struct sockaddr_un local;
-	socklen_t len;
-
-	char *command = "get_dropbox_status\ndone\n";
-	socketfd = socket(AF_UNIX, SOCK_STREAM, 0);
-	if (socketfd <0)
-		error("ERROR opening socket");
-	local.sun_family = AF_UNIX;
-	strcpy(local.sun_path, "/home/jan/.dropbox/command_socket");
-	len = strlen(local.sun_path)+sizeof(local.sun_family);
-	struct timeval tv = {3, 0};
-	if (setsockopt(socketfd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(struct timeval)) < 0 ||
-			setsockopt(socketfd, SOL_SOCKET, SO_SNDTIMEO, &tv, sizeof(struct timeval)) < 0)
-		error("ERROR setting timeout");
-	if (connect(socketfd, (struct sockaddr *)&local, len) == -1)
-		error("ERROR connecting");
-	char str[100] = "get_dropbox_status\ndone\n";
-	if (send(socketfd, str, strlen(str), 0)==-1)
-		error("ERROR sending");
-	if((t=recv(socketfd, str, 100, 0))>0){
-		str[t] = '\0';
-		printf("%s", str);
-	} else {
-		if (t<0) error("ERROR receiving");
-		else printf("Server closed connection");
-		exit(1);
-	}}
-
-void 
 getdropboxstatus(char *status){
-	int t;
+	int i, t;
 	char command[100] = "get_dropbox_status\ndone\n";
+	bool sync = false;
+	char buf[200];
 
 	if (send(sockfd, command, strlen(command), 0) == -1)
-		error("Sending Dropbox status request");
-	if ((t = recv(sockfd, status, 40, 0))>0){
-		status[t] = '\0';
+		error("ERROR: Sending Dropbox status request");
+	if ((t = recv(sockfd, buf, 199, 0))>0){
+		buf[t] = '\0';
+		for (i = 0; i < 4; i++) {
+			if (strstr(buf, dropboxstates[i])) sync=true;	
+		}
+		if (sync) strcpy(status, "sync");
+		else strcpy(status, "idle");
 	} else {
-		if (t<0) error("Receiving message from Dropbox");
-		else error("Dropbox server closed connection");
+		if (t<0) error("ERROR: Receiving message from Dropbox");
+		else error("ERROR: Dropbox server closed connection");
 	}	
 }
 
@@ -117,19 +98,18 @@ main(void)
 {
 	char status[100];
 	char tmams[20];
-	char dropbox[40];
+	char dropbox[5];
 
 	if ((p = getpwuid(1)) == NULL)
-		error("Getting pwuid");
+		error("ERROR: Getting pwuid");
 
-	/* getdropbox(); */
 	connectdropbox();
 
 	if (!(dpy = XOpenDisplay(NULL)))
-		error("dwmstatus: cannot open display.\n");
+		error("ERROR: dwmstatus: cannot open display.\n");
 
-	for (;;sleep(1)) {
-		mktimes(tmams, "%H:%M:%S", tzamsterdam);
+	for (;;sleep(5)) {
+		mktimes(tmams, "%H:%M", tzamsterdam);
 		getdropboxstatus(dropbox);
 
 		sprintf(status, "Drpobox: %s | Time: %s", dropbox, tmams);
