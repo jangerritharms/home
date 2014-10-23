@@ -6,8 +6,10 @@
 #include <X11/X.h>
 #include <X11/Xatom.h>
 #include <gtk/gtk.h>
+#include <gtk/gtkx.h>
 #include <gdk/gdkx.h>
 #include <gdk/gdk.h>
+#include <cairo.h>
 #include <gdk/gdkkeysyms.h>
 #include <string.h>
 #include <sys/types.h>
@@ -86,7 +88,7 @@ typedef struct {
 static Display *dpy;
 static Atom atoms[AtomLast];
 static Client *clients = NULL;
-static GdkNativeWindow embed = 0;
+static Window embed = 0;
 static gboolean showxid = FALSE;
 static char winid[64];
 static gboolean usingproxy = 0;
@@ -120,9 +122,9 @@ static gboolean decidewindow(WebKitWebView *v, WebKitWebFrame *f,
 static void destroyclient(Client *c);
 static void destroywin(GtkWidget* w, Client *c);
 static void die(const char *errstr, ...);
-static void drawindicator(Client *c);
+static void drawindicator(GtkWidget *w, cairo_t *cr, Client *c);
 static void eval(Client *c, const Arg *arg);
-static gboolean exposeindicator(GtkWidget *w, GdkEventExpose *e, Client *c);
+/* static gboolean exposeindicator(GtkWidget *w, GdkEventExpose *e, Client *c); */
 static void find(Client *c, const Arg *arg);
 static void fullscreen(Client *c, const Arg *arg);
 static const char *getatom(Client *c, int a);
@@ -150,8 +152,8 @@ static const gchar *parseuri(const gchar *uri, char **parsed_uri);
 static char **parse_address(const char *url);
 static char **parse_url(char *str);
 static void pasteuri(GtkClipboard *clipboard, const char *text, gpointer d);
-static void populatepopup(WebKitWebView *web, GtkMenu *menu, Client *c);
-static void popupactivate(GtkMenuItem *menu, Client *);
+/* static void populatepopup(WebKitWebView *web, GtkMenu *menu, Client *c); */
+/* static void popupactivate(GtkMenuItem *menu, Client *); */
 static void print(Client *c, const Arg *arg);
 static GdkFilterReturn processx(GdkXEvent *xevent, GdkEvent *event,
 		gpointer d);
@@ -415,18 +417,15 @@ die(const char *errstr, ...) {
 }
 
 static void
-drawindicator(Client *c) {
+drawindicator(GtkWidget *w, cairo_t *cr, Client *c) {
 	gint width;
 	const char *uri;
 	char *colorname;
-	GtkWidget *w;
-	GdkGC *gc;
-	GdkColor fg;
+	GdkRGBA color;
 
 	uri = geturi(c);
-	w = c->indicator;
-	width = c->progress * w->allocation.width / 100;
-	gc = gdk_gc_new(w->window);
+	
+	width = c->progress * gtk_widget_get_allocated_width(w)/100;
 	if(strstr(uri, "https://") == uri) {
 		if(usingproxy) {
 			colorname = c->sslfailed? progress_proxy_untrust :
@@ -443,21 +442,17 @@ drawindicator(Client *c) {
 		}
 	}
 
-	gdk_color_parse(colorname, &fg);
-	gdk_gc_set_rgb_fg_color(gc, &fg);
-	gdk_draw_rectangle(w->window,
-			w->style->bg_gc[GTK_WIDGET_STATE(w)],
-			TRUE, 0, 0, w->allocation.width, w->allocation.height);
-	gdk_draw_rectangle(w->window, gc, TRUE, 0, 0, width,
-			w->allocation.height);
-	g_object_unref(gc);
+	gdk_rgba_parse(&color, colorname);
+	gdk_cairo_set_source_rgba(cr, &color);
+	cairo_rectangle(cr, 0, 0, gtk_widget_get_allocated_width(w), gtk_widget_get_allocated_height(w));
+	cairo_rectangle(cr, 0, 0, width, gtk_widget_get_allocated_height(w));
 }
 
-static gboolean
-exposeindicator(GtkWidget *w, GdkEventExpose *e, Client *c) {
-	drawindicator(c);
-	return TRUE;
-}
+/* static gboolean */
+/* exposeindicator(GtkWidget *w, GdkEventExpose *e, Client *c) { */
+/* 	drawindicator(c); */
+/* 	return TRUE; */
+/* } */
 
 static void
 find(Client *c, const Arg *arg) {
@@ -486,7 +481,7 @@ getatom(Client *c, int a) {
 	unsigned long ldummy;
 	unsigned char *p = NULL;
 
-	XGetWindowProperty(dpy, GDK_WINDOW_XID(GTK_WIDGET(c->win)->window),
+	XGetWindowProperty(dpy, GDK_WINDOW_XID(gtk_widget_get_window(GTK_WIDGET(c->win))),
 			atoms[a], 0L, BUFSIZ, False, XA_STRING,
 			&adummy, &idummy, &ldummy, &ldummy, &p);
 	if(p)
@@ -733,10 +728,10 @@ newclient(void) {
 			G_CALLBACK(keypress), c);
 
 	/* Pane */
-	c->pane = gtk_vpaned_new();
+	c->pane = gtk_paned_new(GTK_ORIENTATION_VERTICAL);
 
 	/* VBox */
-	c->vbox = gtk_vbox_new(FALSE, 0);
+	c->vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
 	gtk_paned_pack1(GTK_PANED(c->pane), c->vbox, TRUE, TRUE);
 
 	/* Scrolled Window */
@@ -776,9 +771,9 @@ newclient(void) {
 	g_signal_connect(G_OBJECT(c->view),
 			"button-release-event",
 			G_CALLBACK(buttonrelease), c);
-	g_signal_connect(G_OBJECT(c->view),
-			"populate-popup",
-			G_CALLBACK(populatepopup), c);
+	/* g_signal_connect(G_OBJECT(c->view), */
+	/* 		"populate-popup", */
+	/* 		G_CALLBACK(populatepopup), c); */
 	g_signal_connect(G_OBJECT(c->view),
 			"resource-request-starting",
 			G_CALLBACK(beforerequest), c);
@@ -786,8 +781,8 @@ newclient(void) {
 	/* Indicator */
 	c->indicator = gtk_drawing_area_new();
 	gtk_widget_set_size_request(c->indicator, 0, indicator_thickness);
-	g_signal_connect (G_OBJECT (c->indicator), "expose_event",
-			G_CALLBACK (exposeindicator), c);
+	g_signal_connect (G_OBJECT (c->indicator), "draw",
+			G_CALLBACK (drawindicator), c);
 
 	/* Arranging */
 	gtk_container_add(GTK_CONTAINER(c->scroll), GTK_WIDGET(c->view));
@@ -808,8 +803,8 @@ newclient(void) {
 	gtk_widget_show(c->win);
 	gtk_window_set_geometry_hints(GTK_WINDOW(c->win), NULL, &hints,
 			GDK_HINT_MIN_SIZE);
-	gdk_window_set_events(GTK_WIDGET(c->win)->window, GDK_ALL_EVENTS_MASK);
-	gdk_window_add_filter(GTK_WIDGET(c->win)->window, processx, c);
+	gdk_window_set_events(gtk_widget_get_window(GTK_WIDGET(c->win)), GDK_ALL_EVENTS_MASK);
+	gdk_window_add_filter(gtk_widget_get_window(GTK_WIDGET(c->win)), processx, c);
 	webkit_web_view_set_full_content_zoom(c->view, TRUE);
 
 	frame = webkit_web_view_get_main_frame(c->view);
@@ -859,7 +854,7 @@ newclient(void) {
 	if(showxid) {
 		gdk_display_sync(gtk_widget_get_display(c->win));
 		printf("%u\n",
-			(guint)GDK_WINDOW_XID(GTK_WIDGET(c->win)->window));
+			(guint)GDK_WINDOW_XID(gtk_widget_get_window(GTK_WIDGET(c->win))));
 		fflush(NULL);
                 if (fclose(stdout) != 0) {
 			die("Error closing stdout");
@@ -898,44 +893,44 @@ newwindow(Client *c, const Arg *arg, gboolean noembed) {
 	spawn(NULL, &a);
 }
 
-static void
-populatepopup(WebKitWebView *web, GtkMenu *menu, Client *c) {
-	GList *items = gtk_container_get_children(GTK_CONTAINER(menu));
+/* static void */
+/* populatepopup(WebKitWebView *web, GtkMenu *menu, Client *c) { */
+/* 	GList *items = gtk_container_get_children(GTK_CONTAINER(menu)); */
+/*  */
+/* 	for(GList *l = items; l; l = l->next) { */
+/* 		g_signal_connect(l->data, "activate", G_CALLBACK(popupactivate), c); */
+/* 	} */
+/*  */
+/* 	g_list_free(items); */
+/* } */
 
-	for(GList *l = items; l; l = l->next) {
-		g_signal_connect(l->data, "activate", G_CALLBACK(popupactivate), c);
-	}
-
-	g_list_free(items);
-}
-
-static void
-popupactivate(GtkMenuItem *menu, Client *c) {
-	/*
-	 * context-menu-action-2000	open link
-	 * context-menu-action-1	open link in window
-	 * context-menu-action-2	download linked file
-	 * context-menu-action-3	copy link location
-	 * context-menu-action-13	reload
-	 * context-menu-action-10	back
-	 * context-menu-action-11	forward
-	 * context-menu-action-12	stop
-	 */
-
-	GtkAction *a = NULL;
-	const char *name;
-	GtkClipboard *prisel;
-
-	a = gtk_activatable_get_related_action(GTK_ACTIVATABLE(menu));
-	if(a == NULL)
-		return;
-
-	name = gtk_action_get_name(a);
-	if(!g_strcmp0(name, "context-menu-action-3")) {
-		prisel = gtk_clipboard_get(GDK_SELECTION_PRIMARY);
-		gtk_clipboard_set_text(prisel, c->linkhover, -1);
-	}
-}
+/* static void */
+/* popupactivate(GtkMenuItem *menu, Client *c) { */
+/* 	#<{(| */
+/* 	 * context-menu-action-2000	open link */
+/* 	 * context-menu-action-1	open link in window */
+/* 	 * context-menu-action-2	download linked file */
+/* 	 * context-menu-action-3	copy link location */
+/* 	 * context-menu-action-13	reload */
+/* 	 * context-menu-action-10	back */
+/* 	 * context-menu-action-11	forward */
+/* 	 * context-menu-action-12	stop */
+/* 	 |)}># */
+/*  */
+/* 	GAction *a = NULL; */
+/* 	const char *name; */
+/* 	GtkClipboard *prisel; */
+/*  */
+/* 	a = gtk_activatable_get_related_action(GTK_ACTIVATABLE(menu)); */
+/* 	if(a == NULL) */
+/* 		return; */
+/*  */
+/* 	name = g_action_get_name(a); */
+/* 	if(!g_strcmp0(name, "context-menu-action-3")) { */
+/* 		prisel = gtk_clipboard_get(GDK_SELECTION_PRIMARY); */
+/* 		gtk_clipboard_set_text(prisel, c->linkhover, -1); */
+/* 	} */
+/* } */
 
 #define SCHEME_CHAR(ch) (isalnum (ch) || (ch) == '-' || (ch) == '+')
 
@@ -1216,7 +1211,7 @@ scroll(GtkAdjustment *a, const Arg *arg) {
 static void
 setatom(Client *c, int a, const char *v) {
 	XSync(dpy, False);
-	XChangeProperty(dpy, GDK_WINDOW_XID(GTK_WIDGET(c->win)->window),
+	XChangeProperty(dpy, GDK_WINDOW_XID(gtk_widget_get_window(GTK_WIDGET(c->win))),
 			atoms[a], XA_STRING, 8, PropModeReplace,
 			(unsigned char *)v, strlen(v) + 1);
 }
@@ -1232,7 +1227,7 @@ setup(void) {
 	sigchld(0);
 	gtk_init(NULL, NULL);
 
-	dpy = GDK_DISPLAY();
+	dpy = gdk_x11_display_get_xdisplay(gdk_display_get_default());
 
 	/* atoms */
 	atoms[AtomFind] = XInternAtom(dpy, "_SURF_FIND", False);
@@ -1362,12 +1357,12 @@ update(Client *c) {
 	if(c->linkhover) {
 		t = g_strdup_printf("%s| %s", togglestat, c->linkhover);
 	} else if(c->progress != 100) {
-		drawindicator(c);
+		/* drawindicator(c->indicator, gdk_cairo_create(gtk_widget_get_window(c->indicator)), c); */
 		gtk_widget_show(c->indicator);
 		t = g_strdup_printf("[%i%%] %s| %s", c->progress, togglestat,
 				c->title);
 	} else {
-		gtk_widget_hide_all(c->indicator);
+		gtk_widget_hide(c->indicator);
 		t = g_strdup_printf("%s| %s", togglestat, c->title);
 	}
 
@@ -1378,7 +1373,7 @@ update(Client *c) {
 static void
 updatewinid(Client *c) {
 	snprintf(winid, LENGTH(winid), "%u",
-			(int)GDK_WINDOW_XID(GTK_WIDGET(c->win)->window));
+			(int)GDK_WINDOW_XID(gtk_widget_get_window(GTK_WIDGET(c->win))));
 }
 
 static void

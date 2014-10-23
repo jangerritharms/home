@@ -52,22 +52,22 @@ static unsigned int tabspaces = 8;
 /* Terminal colors (16 first used in escape sequence) */
 static const char *colorname[] = {
 	/* solarized light */
-	"#eee8d5",  /*  0: black    */
-	"#dc322f",  /*  1: red      */
-	"#859900",  /*  2: green    */
-	"#b58900",  /*  3: yellow   */
-	"#268bd2",  /*  4: blue     */
-	"#d33682",  /*  5: magenta  */
-	"#2aa198",  /*  6: cyan     */
-	"#073642",  /*  7: white    */
-	"#fdf6e3",  /*  8: brblack  */
-	"#cb4b16",  /*  9: brred    */
-	"#93a1a1",  /* 10: brgreen  */
-	"#839496",  /* 11: bryellow */
-	"#657b83",  /* 12: brblue   */
-	"#6c71c4",  /* 13: brmagenta*/
-	"#586e75",  /* 14: brcyan   */
-	"#002b36",  /* 15: brwhite  */
+	"#2C3E50",  /*  0: Midnight Blue  */
+	"#34495E",  /*  1: Wet Asphalt    */
+	"#2980B9",  /*  3: Belize Hole    */
+	"#3498DB",  /*  2: Peter River    */
+	"#1ABC9C",  /*  4: Turquoise      */
+	"#16A085",  /*  5: Green sea      */
+	"#F1C40f",  /*  6: Sun flower     */
+	"#F39C12",  /*  7: Orange         */
+	"#E74C3C",  /*  8: Alizarin       */
+	"#C0392B",  /*  9: Pomegranate    */
+	"#ECF0F1",  /* 10: Clouds         */
+	"#BDC3C7",  /* 11: Silver         */
+	"#95A5A6",  /* 12: Concrete       */
+	"#7F8C8D",  /* 13: Asbestos       */
+	"#9B59B6",  /* 14: Amethyst       */
+	"#8E44AD",  /* 15: Wisteria       */
 };
 
 
@@ -75,9 +75,9 @@ static const char *colorname[] = {
  * Default colors (colorname index)
  * foreground, background, cursor
  */
-static unsigned int defaultfg = 12;
-static unsigned int defaultbg = 8;
-static unsigned int defaultcs = 14;
+static unsigned int defaultfg = 10;
+static unsigned int defaultbg = 0;
+static unsigned int defaultcs = 6;
 
 /*
  * Colors used, when the specific fg == defaultfg. So in reverse mode this
@@ -85,7 +85,7 @@ static unsigned int defaultcs = 14;
  * complex.
  */
 static unsigned int defaultitalic = 11;
-static unsigned int defaultunderline = 7;
+static unsigned int defaultunderline = 6;
 
 /* Internal mouse shortcuts. */
 /* Beware that overloading Button1 will disable the selection. */
