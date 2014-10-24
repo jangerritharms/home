@@ -1,0 +1,5 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhist_cnt =3
+let g:netrw_dirhist_1='/home/jan/.dropbox/instance1'
+let g:netrw_dirhist_2='/home/jan/dwmstatus-git'
+let g:netrw_dirhist_3='/media/media/Dropbox/Uni/Tissue Biomechanics/assignment_1'
