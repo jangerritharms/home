@@ -6,7 +6,9 @@ call vundle#begin()
 
 Plugin 'gmarik/Vundle.vim'
 Plugin 'tpope/vim-surround'
-
+Plugin 'kien/ctrlp.vim'
+Plugin 'tacahiroy/ctrlp-funky'
+ 
 call vundle#end()
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -189,4 +191,12 @@ endfunc
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Package settings
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let g:ycm_global_ycm_extra_conf = '/usr/share/vim/vimfiles/third_party/ycmd/ycmd/tests/.ycm_extra_conf.py'
+" YouCompleteMe
+let g:ycm_global_ycm_extra_conf = '/home/jan/.ycm_extra_conf.py'
+
+" Ctrlp
+let g:ctrlp_map = '<leader>t'
+let g:ctrlp_cmd = 'CtrlP'
+let g:ctrlp_root_markers = ['Makefile']
+let g:ctrlp_extensions = ['funky']
+nnoremap <leader>f :CtrlPFunky<CR>
