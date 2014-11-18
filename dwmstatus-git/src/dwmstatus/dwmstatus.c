@@ -13,6 +13,8 @@
 #include <X11/Xlib.h>
 
 char *dropboxstates[4] = {"Downloading", "Uploading", "Syncing", "Indexing"};
+char batteryfilepath[] = "/sys/class/power_supply/BAT1/capacity";
+FILE *batteryfile;
 
 char *tzamsterdam = "Europe/Amsterdam";
 static Display *dpy;
@@ -23,6 +25,10 @@ struct passwd *p;
 void error(const char *msg){
 	perror(msg);
 	exit(1);
+}
+
+void warning(const char *msg){
+    perror(msg);
 }
 
 void
@@ -93,12 +99,21 @@ setstatus(char *str)
 	XSync(dpy, False);
 }
 
+void 
+getbatterylevel(int *capacity, FILE *f){
+    if (!fscanf(f, "%d", capacity))
+        warning("Could not read battery level");
+}
+
 int
 main(void)
 {
 	char status[100];
 	char tmams[20];
 	char dropbox[5];
+    int i;
+    bool batterypresent = true;
+    int capacity;
 
 	if ((p = getpwuid(1)) == NULL)
 		error("ERROR: Getting pwuid");
@@ -108,16 +123,26 @@ main(void)
 	if (!(dpy = XOpenDisplay(NULL)))
 		error("ERROR: dwmstatus: cannot open display.\n");
 
-	for (;;sleep(5)) {
+    if (!(batteryfile = fopen(batteryfilepath, "rb"))){
+        warning("No battery present");
+        batterypresent = false;
+    }
+
+	for (i=0;;sleep(5), ++i) {
 		mktimes(tmams, "%H:%M", tzamsterdam);
 		getdropboxstatus(dropbox);
+        getbatterylevel(&capacity, batteryfile);
 
-		sprintf(status, "Drpobox: %s | Time: %s", dropbox, tmams);
+		sprintf(status, "Bat: %d% | Drpobox: %s | Time: %s", capacity, dropbox, tmams);
 		setstatus(status);
+
+        if (i%10==0 && batterypresent){
+            fclose(batteryfile);
+            batteryfile = fopen(batteryfilepath, "rb");
+        }
 	}
 
 	XCloseDisplay(dpy);
 
 	return 0;
 }
-

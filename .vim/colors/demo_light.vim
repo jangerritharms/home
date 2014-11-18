@@ -6,15 +6,15 @@ endif
 let g:colors_name = "Demo light"
 
 " Interface
-highlight Visual ctermfg=0 ctermbg=4 cterm=NONE
-highlight CursorLine ctermfg=NONE ctermbg=1 cterm=NONE
+highlight Visual ctermfg=0 ctermbg=3 cterm=NONE
+highlight CursorLine ctermfg=NONE ctermbg=8 cterm=NONE
+highlight StatusLine ctermfg=0 ctermbg=15 cterm=NONE
+highlight ModeMsg ctermfg=2 ctermbg=NONE cterm=NONE
+highlight LineNr ctermfg=2 ctermbg=8 cterm=NONE
 
 " Text
-highlight Character ctermfg=6 ctermbg=NONE cterm=NONE
-highlight StorageClass ctermfg=4 ctermbg=NONE cterm=NONE
-highlight Keyword ctermfg=9 ctermbg=NONE cterm=NONE
-highlight Function ctermfg=9 ctermbg=NONE cterm=NONE
-highlight link cType cStorageClass
-highlight Comment ctermfg=3 ctermbg=NONE cterm=NONE
-highlight Constant ctermfg=10 ctermbg=NONE cterm=NONE
-highlight Statement ctermfg=7
+highlight Normal ctermfg=2 ctermbg=NONE cterm=NONE
+highlight Strings ctermfg=3 ctermbg=NONE cterm=NONE
+highlight Comment ctermfg=4 ctermbg=NONE cterm=NONE
+highlight Statement ctermfg=11 ctermbg=NONE cterm=NONE
+highlight Constant ctermfg=15 ctermbg=NONE cterm=NONE

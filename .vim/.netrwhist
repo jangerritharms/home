@@ -1,5 +1,9 @@
 let g:netrw_dirhistmax  =10
-let g:netrw_dirhist_cnt =3
+let g:netrw_dirhist_cnt =7
 let g:netrw_dirhist_1='/home/jan/.dropbox/instance1'
 let g:netrw_dirhist_2='/home/jan/dwmstatus-git'
 let g:netrw_dirhist_3='/media/media/Dropbox/Uni/Tissue Biomechanics/assignment_1'
+let g:netrw_dirhist_4='/home/jan/MATLAB/toolbox/local'
+let g:netrw_dirhist_5='/home/jan/00PythonSoftware/FreeKiteSim/fks_control'
+let g:netrw_dirhist_6='/home/jan/00PythonSoftware/bin'
+let g:netrw_dirhist_7='/home/jan/00PythonSoftware/FreeKiteSim/fks_control'

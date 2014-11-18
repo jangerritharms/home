@@ -74,6 +74,10 @@ source $ZSH/oh-my-zsh.sh
 # added by Miniconda 3.3.0 installer
 export PATH="/home/jan/miniconda/bin:$PATH"
 
+zstyle ':completion:*:default' list-colors ${(@s.:.)LS_COLORS}
+autoload compinit
+compinit
+
 # some pacman aliases
 alias pI="sudo pacman -S"
 alias pS="sudo pacman -Ss"
@@ -85,3 +89,4 @@ alias Recon='reconnect.sh'
 
 export LD_LIBRARY_PATH=/home/jan/uni/Humanoid\ Robots/dip/Linuxa64/lib:$LD_LIBRARY_PATH
 #export PATH="/home/jan/00PythonSoftware/bin:$PATH"
+export PATH="/home/jan/miniconda/envs/kitepower/bin:$PATH"
