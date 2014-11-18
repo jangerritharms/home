@@ -53,21 +53,21 @@ static unsigned int tabspaces = 8;
 static const char *colorname[] = {
 	/* solarized light */
 	"#2C3E50",  /*  0: Midnight Blue  */
-	"#34495E",  /*  1: Wet Asphalt    */
-	"#2980B9",  /*  3: Belize Hole    */
-	"#3498DB",  /*  2: Peter River    */
-	"#1ABC9C",  /*  4: Turquoise      */
-	"#16A085",  /*  5: Green sea      */
-	"#F1C40f",  /*  6: Sun flower     */
-	"#F39C12",  /*  7: Orange         */
-	"#E74C3C",  /*  8: Alizarin       */
-	"#C0392B",  /*  9: Pomegranate    */
-	"#ECF0F1",  /* 10: Clouds         */
-	"#BDC3C7",  /* 11: Silver         */
-	"#95A5A6",  /* 12: Concrete       */
-	"#7F8C8D",  /* 13: Asbestos       */
-	"#9B59B6",  /* 14: Amethyst       */
-	"#8E44AD",  /* 15: Wisteria       */
+	"#E74C3C",  /*  1: Alizarin       */
+	"#56e88b",  /*  2: Emerald        */
+	"#F1C40f",  /*  3: Sun flower     */
+	"#3498DB",  /*  4: Peter River    */
+	"#9B59B6",  /*  5: Amethyst       */
+	"#1ABC9C",  /*  6: Turquoise      */
+	"#95A5A6",  /*  7: Concrete       */
+	"#34495E",  /*  8: Asbestos       */
+	"#34495E",  /*  9: Pomegranate    */
+    "#27AE60",  /* 10: Nephritis      */
+	"#ECF0F1",  /* 11: Wet Asphalt    */
+	"#F39C12",  /* 12: Orange         */
+	"#2980B9",  /* 13: Belize Hole    */
+	"#8E44AD",  /* 14: Wisteria       */
+	"#ECF0F1",  /* 15: Clouds         */
 };
 
 
@@ -75,9 +75,9 @@ static const char *colorname[] = {
  * Default colors (colorname index)
  * foreground, background, cursor
  */
-static unsigned int defaultfg = 10;
+static unsigned int defaultfg = 15;
 static unsigned int defaultbg = 0;
-static unsigned int defaultcs = 6;
+static unsigned int defaultcs = 3;
 
 /*
  * Colors used, when the specific fg == defaultfg. So in reverse mode this
