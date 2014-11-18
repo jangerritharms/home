@@ -18,3 +18,5 @@
 .vim/bundle/
 !surf/
 !dwm/
+*.surf*
+*.local.vimrc
