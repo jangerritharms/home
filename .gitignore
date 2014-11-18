@@ -1,8 +1,6 @@
 /*
 /*/
 !.vimrc
-!surf/*
-!/dwm/*
 !dwmstatus-git/
 !.zshrc
 !.Xresources
@@ -17,3 +15,6 @@
 !programs.txt
 !wallpaper.jpg
 !.vim/
+.vim/bundle/
+!surf/
+!dwm/
