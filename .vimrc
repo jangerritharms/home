@@ -42,7 +42,6 @@ set tm=500
 " Colors
 syntax enable
 colorscheme demo_light
-set background=dark
 set cursorline
 set number
 

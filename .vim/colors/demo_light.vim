@@ -14,7 +14,8 @@ highlight LineNr ctermfg=2 ctermbg=8 cterm=NONE
 
 " Text
 highlight Normal ctermfg=2 ctermbg=NONE cterm=NONE
-highlight Strings ctermfg=3 ctermbg=NONE cterm=NONE
+highlight String ctermfg=5 ctermbg=NONE cterm=NONE
 highlight Comment ctermfg=4 ctermbg=NONE cterm=NONE
-highlight Statement ctermfg=11 ctermbg=NONE cterm=NONE
+highlight Statement ctermfg=1 ctermbg=NONE cterm=NONE
 highlight Constant ctermfg=15 ctermbg=NONE cterm=NONE
+highlight Type ctermfg=3 ctermbg=NONE cterm=NONE
